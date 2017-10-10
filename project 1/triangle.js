@@ -2,6 +2,36 @@
 
 class Triangle extends Shape
 {
+	Reshape(new_vertices)
+	{
+		if (new_vertices.length != 9)
+			throw 'Triangle::Reshape() - bad number of new vertices';
+
+		this.triangle_vrts = new_vertices.slice();
+		var v0 = this.triangle_vrts.slice(0,3);
+		var v1 = this.triangle_vrts.slice(3,6);
+		var v2 = this.triangle_vrts.slice(6,9);
+		//console.log(this.triangle_vrts, v0, v1, v2);
+		var v1v0 = Array(3);
+		var v2v0 = Array(3);
+		var n = Array(3);
+		vec3.subtract(v1v0, v1, v0);
+		vec3.subtract(v2v0, v2, v0);
+		vec3.cross(n, v1v0, v2v0);
+		vec3.normalize(n, n);
+		this.normal_vrts = n.concat(n.concat(n));
+		vec3.scale(n,n,0.1);
+		this.normal_display_vrts = [];
+		for (let i = 0; i < 3; i++)
+		{
+			var v = this.triangle_vrts.slice(i * 3, (i + 1) * 3);
+			this.normal_display_vrts.push(v[0], v[1], v[2]);
+			vec3.add(v, v, n);
+			this.normal_display_vrts.push(v[0], v[1], v[2]);
+		}
+		this.BindBuffers();
+	}
+
     constructor()
     {
         super(true);
@@ -43,40 +73,9 @@ class Triangle extends Shape
 			0.0, 0.5, 0,
 			0.0, 0.5, 0.1
 		];
-        
+
 
         // stuff
         this.BindBuffers();
     }
-    Reshape(verts)
-    {
-        this.triangle_vrts = verts.slice();
-        this.v = [];
-        this.vec1 = [];
-        this.vec2 = [];
-        this.display_norms = [];
-        for(var i=0;i<3;i++)
-        {
-            this.v[i] = this.triangle_vrts.slice(i * 3, (i * 3) + 3);
-        }
-        vec3.subtract(this.vec1, this.v[0], this.v[1]);
-        vec3.subtract(this.vec2, this.v[0], this.v[2]);
-        this.norm=[];
-        vec3.cross(this.norm, this.vec1, this.vec2);
-        vec3.normalize(this.norm, this.norm);
-        vec3.multiply(this.display_norms, this.norm, [.1, .1, .1]);
-        this.normal_vrts = [];
-        for (var i = 0; i < 3; i++)
-        {
-            this.normal_vrts.push(this.norm[0],this.norm[1],this.norm[2]);
-        }
-        this.normal_display_vrts = [];
-        for (var i = 0; i < 3; i++)
-        {
-            this.normal_display_vrts.push(this.triangle_vrts[i * 3], this.triangle_vrts[(i * 3)+1], this.triangle_vrts[(i * 3)+2]);
-            this.normal_display_vrts.push(this.display_norms[0] + this.triangle_vrts[i * 3], this.display_norms[1] + this.triangle_vrts[(i * 3) + 1], this.display_norms[2] + this.triangle_vrts[(i * 3) + 2]);
-        }
-        this.BindBuffers();
-    }
-    
 }
