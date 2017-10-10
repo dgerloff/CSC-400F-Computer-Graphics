@@ -3,6 +3,22 @@
 	{
 		"selected_items":
 		[
+			[
+				"cole",
+				"colorfulFragCode"
+			],
+			[
+				"sha",
+				"shader_program"
+			],
+			[
+				"frag",
+				"frag_id"
+			],
+			[
+				"vert",
+				"vertex_id"
+			]
 		]
 	},
 	"buffers":
@@ -11,26 +27,20 @@
 			"file": "/C/Users/Valued Customer/Desktop/Graphics/New folder/stuff.html",
 			"settings":
 			{
-				"buffer_size": 6315,
+				"buffer_size": 4035,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "shaders-example.js",
-			"settings":
-			{
-				"buffer_size": 10799,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": ";\n",
+			"contents": ";\nclass Shader \n{\n\tconstructer(vertex_id,frag_id)//,phong)\n\t{\n\t\tthis.shader_program=this.create_shader(vertex_id,frag_id);\n\t\tthis.initialize_shader();\n\t}\n\tcreate_shader(vertex_id,frag_id)\n\t{\n\t\tif (!vertex_id)\n\t\t\tthrow\"Parameter 1 to CreateShader may be missing.\";\n\n\t\tif (!frag_id)\n\t\t\tthrow \"Parameter 2 to CreateShader may be missing.\";\n\t\t//vert\n\t\tvar vertShader = gl.createShader(gl.VERTEX_SHADER);\n\t\tgl.shaderSource(vertShader, vertex_id);\n\t\tgl.compileShader(vertShader);\n\t\tvar success = gl.getShaderParameter(vertShader, gl.COMPILE_STATUS);\n\t\tif (!success)\n\t\t\tthrow \"Could not compile vertex shader:\" + gl.getShaderInfoLog(vertShader);\n\t\t//frag\n\t\tvar fragShader = gl.createShader(gl.FRAGMENT_SHADER);\n\t\t\tgl.shaderSource(fragShader, frag_id);\n\t\t\tgl.compileShader(fragShader);\n\t\t\tsuccess = gl.getShaderParameter(fragShader, gl.COMPILE_STATUS);\n\t\t\tif (!success)\n\t\t\t\tthrow \"Could not compile fragment shader:\" + gl.getShaderInfoLog(fragShader);\n\t\t//combine\n\t\tvar colorfulShaderProgram = gl.createProgram();\n\t\t\tgl.attachShader(colorfulShaderProgram, vertShader); \n\t\t\tgl.attachShader(colorfulShaderProgram, fragShader);\n\t\t\tgl.linkProgram(colorfulShaderProgram);\n\t\t\treturn colorfulShaderProgram;\n\t}\n\tinitialize_shader()\n\t{\n\t\tgl.useProgram(this.shader_program);\n\t\tthis.a_vertices = gl.getAttribLocation(this.shader_program, \"a_vertices\");\n\t\tthis.a_normals = gl.getAttribLocation(this.shader_program, \"a_normals\");\n\t\tthis.a_colors = gl.getAttribLocation(this.shader_program, \"a_colors\");\n\t\t//this.a_tcoords = gl.getAttribLocation(this.shader_program, \"a_tcoords\");\n\t\tthis.u_color_handle = gl.getUniformLocation(this.shader_program, \"u_color\");\n\t\tthis.u_normal_matrix_handle = gl.getUniformLocation(this.shader_program, \"u_normal_matrix\");\n\t\tthis.u_light_position_handle = gl.getUniformLocation(this.shader_program, \"u_light_position\");\n\t\tthis.u_modelview_matrix_handle = gl.getUniformLocation(this.shader_program, \"u_modelview_matrix\");\n\t\tthis.u_projection_matrix_handle = gl.getUniformLocation(this.shader_program, \"u_projection_matrix\");\n\t\tthis.u_ambient_handle = gl.getUniformLocation(this.shader_program, \"u_material.k_ambient\");\n\t\tthis.u_diffuse_handle = gl.getUniformLocation(this.shader_program, \"u_material.k_diffuse\");\n\t\tthis.u_specular_handle = gl.getUniformLocation(this.shader_program, \"u_material.k_specular\");\n\t\tthis.u_shininess_handle = gl.getUniformLocation(this.shader_program, \"u_material.k_shininess\");\n\t\tgl.useProgram(null);\n\t}\n\t/**\n\t* Attributes are assigned values IF the attribute handle is zero or greater.\n\t* @param {glbuffer} the vertices (null if none).\n\t* @param {glbuffer} the normals (null if none).\n\t* @param {glbuffer} the vertex colors (null if none).\n\t* @param {glbuffer} the vertex texture coordinates (null if none).\n\t* @return {none} no return value\n\t*/\n\tSetStandardAttributes(vertices_buffer, normals_buffer, colors_buffer)\n\t{\n\t\tif (vertices_buffer != null && this.a_vertices >= 0)\n\t\t{\n\t\t\tgl.bindBuffer(gl.ARRAY_BUFFER, vertices_buffer);\n\t\t\tgl.vertexAttribPointer(this.a_vertices, 3, gl.FLOAT, false, 0, 0);\n\t\t\tgl.enableVertexAttribArray(this.a_vertices);\n\t\t}\n\t\tif (normals_buffer != null && this.a_normals >= 0)\n\t\t{\n\t\t\tgl.bindBuffer(gl.ARRAY_BUFFER, normals_buffer);\n\t\t\tgl.vertexAttribPointer(this.a_normals, 3, gl.FLOAT, false, 0, 0);\n\t\t\tgl.enableVertexAttribArray(this.a_normals);\n\t\t}\n\t\tif (colors_buffer != null && this.a_colors >= 0)\n\t\t{\n\t\t\tgl.bindBuffer(gl.ARRAY_BUFFER, colors_buffer);\n\t\t\tgl.vertexAttribPointer(this.a_colors, 4, gl.FLOAT, false, 0, 0);\n\t\t\tgl.enableVertexAttribArray(this.colors);\n\t\t}\n\t}\n\t\t/**\n\t* Uniforms are assigned values IF the uniform handle is not null AND the \n\t* corresponding argument has been supplied.\n\t* @param {mat4} modelview_matrix (null if none).\n\t* @param {mat4} projection_matrix (null if none).\n\t* @param {mat4} normal_matrix (null if none).\n\t* @param {vec4} light_position (null if none).\n\t* @param {struct} a material (null if none).\n\t* @return {none} no return value\n\t*/\n\tSetStandardUniforms(modelview_matrix, projection_matrix, normal_matrix, light_position)\n\t{\n\t\t//console.log(this.u_diffuse_handle);\n\n\t\tif (modelview_matrix != null && this.u_modelview_matrix_handle != null)\n\t\t\tgl.uniformMatrix4fv(this.u_modelview_matrix_handle, false, modelview_matrix);\t\n\t\tif (projection_matrix != null && this.u_projection_matrix_handle != null)\n\t\t\tgl.uniformMatrix4fv(this.u_projection_matrix_handle, false, projection_matrix);\t\n\t\tif (normal_matrix != null && this.u_normal_matrix_handle != null)\n\t\t\tgl.uniformMatrix3fv(this.u_normal_matrix_handle, false, normal_matrix);\n\t\tif (light_position != null && this.u_light_position_handle != null)\n\t\t\tgl.uniform4fv(this.u_light_position_handle, light_position);\t\t\n\t}\n\n\tUseProgram()\n\t{\n\t\tgl.useProgram(this.prog);\n\t}\n\t\tEndProgram()\n\t{\n\t\tgl.useProgram(null);\n\t}\n}",
 			"file": "shaders.js",
-			"file_size": 0,
-			"file_write_time": 131520720502756063,
+			"file_size": 4890,
+			"file_write_time": 131520802564039700,
 			"settings":
 			{
-				"buffer_size": 2,
+				"buffer_size": 4775,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		}
@@ -103,7 +113,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -112,15 +122,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6315,
+						"buffer_size": 4035,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1985,
-								1985
+								2107,
+								2107
 							]
 						],
 						"settings":
@@ -129,55 +139,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "shaders-example.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10799,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								348,
-								348
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1170.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 1,
 					"file": "shaders.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2,
+						"buffer_size": 4775,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2,
-								2
+								4038,
+								4038
 							]
 						],
 						"settings":
@@ -185,10 +167,10 @@
 							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 990.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
