@@ -28,13 +28,6 @@
 					gl_Position = projection_matrix * modelview_matrix * vec4(vertex_coordinates,0.0, 1.0);
 					color_out = vertex_color;
 				}`;
-
-			var vertShader = gl.createShader(gl.VERTEX_SHADER);
-			gl.shaderSource(vertShader, colorfulVertCode);
-			gl.compileShader(vertShader);
-			var success = gl.getShaderParameter(vertShader, gl.COMPILE_STATUS);
-			if (!success)
-				throw "Could not compile vertex shader:" + gl.getShaderInfoLog(vertShader);
 	
 			var colorfulFragCode =
 				`#version 300 es\n
@@ -45,19 +38,7 @@
 				{
 					color = vec4(color_out, 1.0);
 				}`;
-
-			var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-			gl.shaderSource(fragShader, colorfulFragCode);
-			gl.compileShader(fragShader);
-			success = gl.getShaderParameter(fragShader, gl.COMPILE_STATUS);
-			if (!success)
-				throw "Could not compile fragment shader:" + gl.getShaderInfoLog(fragShader);
 	
-			var colorfulShaderProgram = gl.createProgram();
-			gl.attachShader(colorfulShaderProgram, vertShader); 
-			gl.attachShader(colorfulShaderProgram, fragShader);
-			gl.linkProgram(colorfulShaderProgram);
-
 			var solidVertCode =
 				`#version 300 es\n 
 				uniform mat4 modelview_matrix;
@@ -67,13 +48,6 @@
 				{
 					gl_Position = projection_matrix * modelview_matrix * vec4(vertex_coordinates, 1.0);
 				}`;
-
-			vertShader = gl.createShader(gl.VERTEX_SHADER);
-			gl.shaderSource(vertShader, solidVertCode);
-			gl.compileShader(vertShader);
-			var success = gl.getShaderParameter(vertShader, gl.COMPILE_STATUS);
-			if (!success)
-				throw "Could not compile vertex shader:" + gl.getShaderInfoLog(vertShader);
 	
 			var solidFragCode =
 				`#version 300 es\n
@@ -84,30 +58,7 @@
 				{
 					color = vec4(u_color, 1.0);
 				}`;
-
-			fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-			gl.shaderSource(fragShader, solidFragCode);
-			gl.compileShader(fragShader);
-			success = gl.getShaderParameter(fragShader, gl.COMPILE_STATUS);
-			if (!success)
-				throw "Could not compile fragment shader:" + gl.getShaderInfoLog(fragShader);
-	
-			var solidShaderProgram = gl.createProgram();
-			gl.attachShader(solidShaderProgram, vertShader); 
-			gl.attachShader(solidShaderProgram, fragShader);
-			gl.linkProgram(solidShaderProgram);
-
-			var modelview_matrix_handle = gl.getUniformLocation(colorfulShaderProgram, "modelview_matrix");
-			var projection_matrix_handle = gl.getUniformLocation(colorfulShaderProgram, "projection_matrix");
-			var color_attribute_handle = gl.getAttribLocation(colorfulShaderProgram, "vertex_color");
-			var vertex_attribute_handle = gl.getAttribLocation(colorfulShaderProgram, "vertex_coordinates");
-
-			var solid_modelview_matrix_handle = gl.getUniformLocation(solidShaderProgram, "modelview_matrix");
-			var solid_projection_matrix_handle = gl.getUniformLocation(solidShaderProgram, "projection_matrix");
-			var solid_color_uniform_handle = gl.getUniformLocation(solidShaderProgram, "u_color");
-			var solid_vertex_attribute_handle = gl.getAttribLocation(solidShaderProgram, "vertex_coordinates");
-
-
+//
 			var draw_normals = false;
 			var draw_wireframe = false;
 			var show_triangles = false;
@@ -139,6 +90,7 @@
 			0.0, 1, 0
 			])
 
+
 			function Draw(now)
 			{
 				gl.enable(gl.DEPTH_TEST);
@@ -156,12 +108,11 @@
 				var mdv = mat4.create();
 				mat4.lookAt(mdv, [0.0, 0.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 				mat4.rotate(mdv, mdv, Radians(now * 90.0), [0.0, 1.0, 0.0]);
-
+				triangle.Draw(solid_color_shader, solid_color_shader, modelview_matrix, projection_matrix, normal_matrix, light_position,false, false, false, null,  0,null, null);
 				if (!draw_wireframe)
 				{
-					gl.useProgram(colorfulShaderProgram);
-					gl.uniformMatrix4fv(projection_matrix_handle, false, prj);
-					gl.uniformMatrix4fv(modelview_matrix_handle, false, mdv);
+					wire=new shader(colorfulVertCode,colorfulFragCode);
+					wire.SetStandardUniforms(mdv, prj, normal_matrix, light_position)
 					triangle.Draw(vertex_attribute_handle, color_attribute_handle, true, false, false, false);
 				}
 
