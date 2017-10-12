@@ -65,6 +65,7 @@ class Shader
     {
         this.modelview_matrix_handle = gl.getUniformLocation(this.program, "u_modelview_matrix");
         this.projection_matrix_handle = gl.getUniformLocation(this.program, "u_projection_matrix");
+        debugger;
     }
 
     SetStandardUniforms(mdv, prj)

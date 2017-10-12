@@ -25,7 +25,18 @@ class SolidColorShader extends Shader
     constructor()
     {
         super(solid_vertex_shader, solid_fragment_shader);
+        this.temp = this.program;
         debugger;
         // Things that are custom to this type of shader.
+        this.solid_color_uniform_handle = gl.getUniformLocation(this.program, "u_color");
+		this.solid_vertex_attribute_handle = gl.getAttribLocation(this.program, "a_vertex_coordinates");
+		gl.useProgram(this.program);
+		gl.uniform3fv(this.solid_color_uniform_handle, [1, 1, 1]);
+		return this.program;
+    }
+    getVertex()
+    {
+    	return this.solid_vertex_attribute_handle;
+    	debugger;
     }
 }
